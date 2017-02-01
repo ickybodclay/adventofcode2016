@@ -10,7 +10,7 @@ class Day2 {
         val instructionList = mutableListOf<Instruction>()
         val reader : BufferedReader = BufferedReader(FileReader("day2_input.txt"))
 
-        reader.readLines().mapTo(instructionList) { Instruction(it) }
+        reader.readLines().mapTo(instructionList, ::Instruction)
 
         return instructionList
     }
