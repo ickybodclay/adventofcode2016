@@ -30,3 +30,4 @@ ultimate/*.versionsBackup
 /build
 /captures
 *_input.txt
+/lib
