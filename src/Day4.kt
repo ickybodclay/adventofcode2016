@@ -26,6 +26,7 @@ class Day4 {
 
         roomList.map {
             if (isRealRoom(it)) {
+                println("real room = $it")
                 sum += it.sectorId
             }
         }
@@ -38,15 +39,55 @@ class Day4 {
         val sortedCharCountMap = sortByValue(charCountMap)
 
         println(room.toString() + " " + sortedCharCountMap)
-        return false
+
+        var checksum = room.checksum
+        var previousCheck = checksum.first()
+        var previousCount = sortedCharCountMap.values.first()
+        var checkEqual = false
+
+        sortedCharCountMap.map {
+            if (checksum.isNotEmpty()) {
+                println("${it.key} ${checksum.first()} ${it.value}")
+
+                if (checkEqual && it.value != previousCount) {
+                    return false
+                }
+
+                previousCheck = checksum.first()
+
+                if (it.key == checksum.first()) {
+                    checksum = checksum.substring(1)
+                    previousCount = it.value
+                    checkEqual = false
+                }
+                else {
+                    checkEqual = true
+                }
+            }
+            else if (checkEqual) {
+                println("$it $previousCheck $previousCount")
+
+                if (it.value == previousCount) {
+                    if (it.key == previousCheck) {
+                        return true
+                    }
+                }
+                else {
+                    return false
+                }
+            }
+        }
+
+        return previousCheck == room.checksum.last()
     }
 
     fun getCharacterCountMap(str: String): Map<Char, Int> {
         val charCountMap = mutableMapOf<Char, Int>()
 
         str.map {
-            if (it != '-')
+            if (it != '-') {
                 charCountMap[it] = charCountMap[it]?.plus(1) ?: 1
+            }
         }
 
         return charCountMap
