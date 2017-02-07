@@ -25,14 +25,20 @@ class Day6 {
             }
         }
 
-        print("error-corrected version = ")
+//        print("error-corrected version = ")
+//        for (charMap in errorCorrectList) {
+//            print(sortByValueDescending(charMap).keys.first())
+//        }
+//        println()
+
+        print("real error-corrected version = ")
         for (charMap in errorCorrectList) {
-            print(sortByValue(charMap).keys.first())
+            print(sortByValueDescending(charMap).keys.last())
         }
         println()
     }
 
-    fun <K, V : Comparable<V>> sortByValue(map: Map<K, V>): Map<K, V> {
+    fun <K, V : Comparable<V>> sortByValueDescending(map: Map<K, V>): Map<K, V> {
         val list = LinkedList(map.entries)
         Collections.sort(list) { o1, o2 -> o2.value.compareTo(o1.value) }
 
