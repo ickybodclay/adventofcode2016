@@ -1,4 +1,5 @@
 import java.security.MessageDigest
+import kotlin.comparisons.compareBy
 
 class Day5 {
     var index = 0
@@ -23,6 +24,56 @@ class Day5 {
         println(md5(input+index).toHexString())
 
         return md5(input+index).toHexString().substring(5).first()
+    }
+
+    fun printRealPassword(input: String) {
+        var instructionList = mutableListOf<Pair<Int, Char>>()
+        val checkList = mutableListOf<Boolean>()
+
+        for (i in 1..8) {
+            checkList.add(false)
+        }
+
+        while (!checkAllPositionsSet(checkList)) {
+            val instruction = getRealNextPasswordCharacter(input)
+
+            if (!checkList[instruction.first]) {
+                instructionList.add(instruction)
+                checkList[instruction.first] = true
+            }
+
+            index++
+        }
+
+        println("real password = ${instructionList.sortedWith(compareBy { it.first })}")
+    }
+
+    fun checkAllPositionsSet(checkArray: List<Boolean>) : Boolean {
+        return checkArray.size == 8 && checkArray.all { it }
+    }
+
+    fun getRealNextPasswordCharacter(input: String) : Pair<Int, Char> {
+        while (!md5(input+index).toHexString().startsWith("00000")) {
+            index++
+        }
+
+        println(md5(input+index).toHexString())
+
+        val instructionStr = md5(input+index).toHexString().substring(5).substring(0, 2)
+        println("instruction = " + instructionStr)
+
+        if (!instructionStr.first().isDigit()) {
+            index++
+            return getRealNextPasswordCharacter(input)
+        }
+
+        val instruction = Pair(Integer.parseInt(instructionStr.first().toString()), instructionStr.last())
+        if (instruction.first >= 8) {
+            index++
+            return getRealNextPasswordCharacter(input)
+        }
+
+        return instruction
     }
 
     /**
@@ -58,5 +109,5 @@ class Day5 {
 }
 
 fun main(args: Array<String>) {
-    Day5().printPassword("reyedfim")
+    Day5().printRealPassword("reyedfim")
 }
