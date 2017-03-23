@@ -16,6 +16,8 @@ class Day10 {
     val botPattern: Pattern = Pattern.compile("""bot (\d+) gives low to (bot|output) (\d+) and high to (bot|output) (\d+)""")
 
     val botMap = mutableMapOf<Int, Bot>()
+    val outputMap = mutableMapOf<Int, Int>()
+
     var checkLow: Int = 0
     var checkHigh: Int = 0
 
@@ -99,6 +101,10 @@ class Day10 {
                     bot.chipList.remove(low)
                     botMap[botInstruction.lowDestinationId]!!.chipList.add(low)
                 }
+                else if (botInstruction.lowDestination == "output") {
+                    bot.chipList.remove(low)
+                    outputMap[botInstruction.lowDestinationId] = low
+                }
 
                 if (botInstruction.highDestination == "bot") {
                     if (!botMap.containsKey(botInstruction.highDestinationId)) {
@@ -107,6 +113,10 @@ class Day10 {
 
                     bot.chipList.remove(high)
                     botMap[botInstruction.highDestinationId]!!.chipList.add(high)
+                }
+                else if (botInstruction.highDestination == "output") {
+                    bot.chipList.remove(high)
+                    outputMap[botInstruction.highDestinationId] = high
                 }
             }
             else {
@@ -119,6 +129,9 @@ class Day10 {
         checkLow = low
         checkHigh = high
         readInput()
+
+        val outputsMultiplied: Int = outputMap[0]!! * outputMap[1]!! * outputMap[2]!!
+        println("chip in outputs bin 0, 1, & 2 multiplied together = $outputsMultiplied")
     }
 }
 
