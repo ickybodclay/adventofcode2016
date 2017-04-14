@@ -16,10 +16,8 @@ class Day12 {
             val instructionMatcher = instructionPattern.matcher(it)
 
             if (instructionMatcher.matches()) {
-
                 val instruction = Instruction(instructionMatcher.group(1), instructionMatcher.group(2), instructionMatcher.group(3))
                 instructionList.add(instruction)
-                println(instruction)
             }
         }
 
@@ -30,18 +28,32 @@ class Day12 {
         val registerMap = mutableMapOf<String, Int>()
         val instructionList = readInput()
 
-        for ((index, value) in instructionList.withIndex()) {
-            when (value.action) {
-                "cpy" -> cpy(registerMap, value.x, value.y!!)
-                "inc" -> inc(registerMap, value.x)
-                "dec" -> dec(registerMap, value.x)
-                "jnz" -> {
-                    val distance = jnz(value.x, value.y!!, index)
-                    if (distance != 0) {
+        registerMap.put("a", 0)
+        registerMap.put("b", 0)
+        registerMap.put("c", 0)
+        registerMap.put("d", 0)
 
+        var i = 0
+        while (i < instructionList.size) {
+            val instruction = instructionList[i]
+            println("# $instruction")
+
+            var hasJumped = false
+
+            when (instruction.action) {
+                "cpy" -> cpy(registerMap, instruction.x, instruction.y!!)
+                "inc" -> inc(registerMap, instruction.x)
+                "dec" -> dec(registerMap, instruction.x)
+                "jnz" -> {
+                    val jumpToDistance = jnz(registerMap, instruction.x, instruction.y!!)
+                    if (jumpToDistance != 0) {
+                        i += jumpToDistance
+                        hasJumped = true
                     }
                 }
             }
+
+            if (!hasJumped) i++
         }
 
         println("value of register $label = ${registerMap[label]}")
@@ -60,24 +72,26 @@ class Day12 {
     }
 
     fun inc(registerMap: MutableMap<String, Int>, x: String) {
-        if (!registerMap.containsKey(x)) {
-            registerMap.put(x, 0)
-        }
-
         registerMap[x] = registerMap[x]!!.plus(1)
     }
 
     fun dec(registerMap: MutableMap<String, Int>, x: String) {
-        if (!registerMap.containsKey(x)) {
-            registerMap.put(x, 0)
-        }
-
-        registerMap[x] = registerMap[x]!!.plus(-1)
+        registerMap[x] = registerMap[x]!!.minus(1)
     }
 
-    fun jnz(x: String, y: String, i: Int): Int {
-        if (isNumeric(x) && x.toInt() == 0) return 0
-        return i + y.toInt()
+    fun jnz(registerMap: MutableMap<String, Int>, x: String, y: String): Int {
+        val xVal: Int
+
+        if (isNumeric(x)) {
+            xVal = x.toInt()
+        } else {
+            xVal = registerMap[x]!!.toInt()
+        }
+
+        if (xVal != 0)
+            return y.toInt()
+
+        return 0
     }
 
     fun isNumeric(str: String): Boolean {
